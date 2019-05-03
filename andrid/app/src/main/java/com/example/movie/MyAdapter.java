@@ -34,8 +34,8 @@ public class MyAdapter  extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         final ListItem listItem = listItems.get(position);
         holder.textViewHead.setText(listItem.getHead());
         holder.textViewDesc.setText(listItem.getCinemas());
-
         Picasso.with(context).load(listItem.getImg_url()).into(holder.imageView);
+
     }
 
     @Override
@@ -48,6 +48,7 @@ public class MyAdapter  extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         public TextView textViewHead;
         public TextView textViewDesc;
         public ImageView imageView;
+
 
         public ViewHolder( View itemView) {
             super(itemView);

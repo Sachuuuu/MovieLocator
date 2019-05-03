@@ -8,4 +8,6 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_maps">Map</string>
+    <string name="about">MovieTrack lets you find the best Movies 🎬 build your watchlists.
+        ❗MovieTrack DOES NOT allow you to watch movies. It lets you DISCOVER and MANAGE the best movies.</string>
 </resources>

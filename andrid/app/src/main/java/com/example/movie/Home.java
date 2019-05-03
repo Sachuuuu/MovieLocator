@@ -1,12 +1,16 @@
 package com.example.movie;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,6 +20,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -38,6 +43,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     private MyAdapter adapter;
     private List<ListItem> listItems;
     private static final String URL_DATA = "https://segmented-dishes.000webhostapp.com/Movie.json";
+    private Context context;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,14 +51,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -104,14 +103,15 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
+
         int id = item.getItemId();
 
         if (id == R.id.about) {
-            Toast.makeText(getApplicationContext(),"About",Toast.LENGTH_SHORT).show();
+            Intent intabout = new Intent(Home.this, About.class);
+            startActivity(intabout);
+
         } else if (id == R.id.location) {
             Intent intmap = new Intent(Home.this,MapsActivity.class);
             startActivity(intmap);
@@ -120,15 +120,64 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             startActivity(intsettings);
 
         } else if (id == R.id.logout) {
-            Toast.makeText(getApplicationContext(),"logout",Toast.LENGTH_SHORT).show();
+            Intent intlogout = new Intent(Home.this,MainActivity.class);
+            startActivity(intlogout);
+            finish();
 
         }else if(id == R.id.delete){
-            Toast.makeText(getApplicationContext(),"Delete",Toast.LENGTH_SHORT).show();
+            deleteUser();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void deleteUser(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Please Confirm");
+        builder.setMessage("You are about to delete "+MainActivity.global_username+" user.Do you really want to proceed ?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Response.Listener<String> stringListener =new Response.Listener<String>(){
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject jsonObjectRes =new JSONObject(response);
+                            boolean success = jsonObjectRes.getBoolean("success");
+
+                            if(success){
+                                Intent intent = new Intent(Home.this,MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
+                            else{
+                                AlertDialog.Builder builder = new AlertDialog.Builder(Home.this);
+                                builder.setMessage("Failed to delete user!").setNegativeButton("Retry",null).create().show();
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                };
+                DeleteRequest deleteRequest = new DeleteRequest(MainActivity.global_username ,stringListener);
+                RequestQueue requestQueue = Volley.newRequestQueue(Home.this);
+                requestQueue.add(deleteRequest);
+            }
+        });
+
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(getApplicationContext(), "You've changed your mind to delete all records", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.show();
     }
 
     private void loadRecyleViewData(){
