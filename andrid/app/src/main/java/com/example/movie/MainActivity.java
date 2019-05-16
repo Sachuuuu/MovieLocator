@@ -1,5 +1,14 @@
 package com.example.movie;
 
+/*
+*
+* MainActivity.java
+*
+* This is the login page of the application.
+*
+*
+* */
+
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -27,11 +36,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         username = findViewById(R.id.username);
         password = findViewById(R.id.password);
         signin = findViewById(R.id.signin);
         register = findViewById(R.id.signin_to_reg);
 
+        //On click listener for register label
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -40,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // On click listener for the sign in button
         signin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -49,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
                 username.setText(null);
                 password.setText(null);
 
+                //Check the whether the input fields are empty or not
                 if(!uname.isEmpty() && !pass.isEmpty()){
                     Response.Listener<String> stringListener = new Response.Listener<String>() {
                         @Override
@@ -57,14 +70,15 @@ public class MainActivity extends AppCompatActivity {
                                 JSONObject jsonObject = new JSONObject(response);
                                 boolean success = jsonObject.getBoolean("success");
 
+                                //Checking login status, whether it is true or false
                                 if(success){
                                     global_username = uname;
                                     Intent movieloactor =new Intent(MainActivity.this, Home.class);
-                                    startActivity(movieloactor);
+                                    startActivity(movieloactor);     // Load home page if the login is successful
 
                                 }else{
                                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                                    builder.setMessage("Login Failed!").setNegativeButton("Retry",null).create().show();
+                                    builder.setMessage("Login Failed!").setNegativeButton("Retry",null).create().show(); // Display alert dialog to display error
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -72,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     };
 
+                    // send the username and password to the web server through SigninRequest
                     SigninRequest signinRequest =new SigninRequest(uname,pass,stringListener);
                     RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
                     requestQueue.add(signinRequest);

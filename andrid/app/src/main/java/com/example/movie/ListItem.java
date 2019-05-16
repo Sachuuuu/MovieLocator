@@ -1,4 +1,10 @@
 package com.example.movie;
+/*
+* ListItem.java class
+*
+*
+*
+* */
 
 public class ListItem {
     private String head;
@@ -9,6 +15,7 @@ public class ListItem {
         return head;
     }
 
+    //
     public ListItem(String head, String cinemas, String img_url) {
         this.head = head;
         this.cinemas = cinemas;

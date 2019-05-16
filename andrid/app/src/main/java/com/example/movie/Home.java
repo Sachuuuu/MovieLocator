@@ -1,5 +1,14 @@
 package com.example.movie;
 
+/*
+*
+* Home.java class
+*
+* This is the home page of the app.
+* In here displays all the 3D movies that are available in scope and EAP cinemas.
+*
+* */
+
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -33,6 +42,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,13 +54,13 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     private List<ListItem> listItems;
     private static final String URL_DATA = "https://segmented-dishes.000webhostapp.com/Movie.json";
     private Context context;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -81,27 +91,6 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.home, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -109,20 +98,20 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         int id = item.getItemId();
 
         if (id == R.id.about) {
-            Intent intabout = new Intent(Home.this, About.class);
+            Intent intabout = new Intent(Home.this, About.class);   //Load the about interface
             startActivity(intabout);
 
         } else if (id == R.id.location) {
-            Intent intmap = new Intent(Home.this,MapsActivity.class);
+            Intent intmap = new Intent(Home.this,MapsActivity.class);   //load the map interface
             startActivity(intmap);
         } else if (id == R.id.settings) {
-            Intent intsettings = new Intent(Home.this, Settings.class);
+            Intent intsettings = new Intent(Home.this, Settings.class); //Load the settings interface
             startActivity(intsettings);
 
         } else if (id == R.id.logout) {
-            Intent intlogout = new Intent(Home.this,MainActivity.class);
+            Intent intlogout = new Intent(Home.this,MainActivity.class);    //Load the login page
             startActivity(intlogout);
-            finish();
+            finish();   // End the activity
 
         }else if(id == R.id.delete){
             deleteUser();
@@ -133,7 +122,10 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         return true;
     }
 
+    // Delete the user from DB
     public void deleteUser(){
+
+        //Set confirmation box
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Please Confirm");
         builder.setMessage("You are about to delete "+MainActivity.global_username+" user.Do you really want to proceed ?");
@@ -145,17 +137,19 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                     @Override
                     public void onResponse(String response) {
                         try {
+                            //get the value of the 'success' from the json object
                             JSONObject jsonObjectRes =new JSONObject(response);
                             boolean success = jsonObjectRes.getBoolean("success");
 
+                            //check whether the success is true or not
                             if(success){
                                 Intent intent = new Intent(Home.this,MainActivity.class);
-                                startActivity(intent);
+                                startActivity(intent); //load login activity
                                 finish();
                             }
                             else{
                                 AlertDialog.Builder builder = new AlertDialog.Builder(Home.this);
-                                builder.setMessage("Failed to delete user!").setNegativeButton("Retry",null).create().show();
+                                builder.setMessage("Failed to delete user!").setNegativeButton("Retry",null).create().show(); //display error message using dialog box
 
                             }
                         } catch (JSONException e) {
@@ -164,6 +158,8 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
                     }
                 };
+
+                // send the username  to the web server through DeleteRequest
                 DeleteRequest deleteRequest = new DeleteRequest(MainActivity.global_username ,stringListener);
                 RequestQueue requestQueue = Volley.newRequestQueue(Home.this);
                 requestQueue.add(deleteRequest);
@@ -173,13 +169,14 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(getApplicationContext(), "You've changed your mind to delete all records", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "You've changed your mind to delete User", Toast.LENGTH_SHORT).show(); //show message
             }
         });
 
         builder.show();
     }
 
+    //Load data in to the home page using recycler view
     private void loadRecyleViewData(){
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Loading Data...");
@@ -200,7 +197,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                                 o.getString("image")
                         );
 
-                        listItems.add(item);
+                        listItems.add(item); //add items to the list
                     }
                     adapter = new MyAdapter(listItems, getApplicationContext());
                     recyclerView.setAdapter(adapter);

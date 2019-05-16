@@ -1,5 +1,13 @@
 package com.example.movie;
 
+/*
+*
+*MapsActivity.java
+*
+*This class is implemented to locate the cinema halls (Scope cineme,liberty cinema and savoy cinema)
+*
+* */
+
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
@@ -39,9 +47,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
-        LatLng savoy = new LatLng(6.879286, 79.859589);
-        LatLng liberty = new LatLng(6.912652, 79.851174);
-        LatLng ccc = new LatLng(6.918168,  79.855602);
+        LatLng savoy = new LatLng(6.879286, 79.859589); // savoy location
+        LatLng liberty = new LatLng(6.912652, 79.851174); //Liberty location
+        LatLng ccc = new LatLng(6.918168,  79.855602); // ccc location
+
+        //Set the location on map
+
         mMap.addMarker(new MarkerOptions().position(savoy).title("Savoy3D"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(savoy));
 
